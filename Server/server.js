@@ -36,17 +36,17 @@ app.get('/api/users/auth', auth, (req, res) => {
 
 app.post('/api/users/register', (req, res) => {
 
-    const user = new User(req.body);
+        const user = new User(req.body);
 
-    user.save((err, doc) => {
-        if (err) return res.jason({ success: false, err });
-        res.status(200).json({
-            success: true
-                //userdata: doc
+        user.save((err, doc) => {
+            if (err) return res.jason({ success: false, err });
+            res.status(200).json({
+                success: true
+                    //userdata: doc
+            })
         })
     })
-})
-
+    //Users login auth checking
 app.post('/api/users/login', (req, res) => {
     User.findOne({ 'email': req.body.email }, (err, user) => {
         if (!user) return res.json({ loginSucess: false, message: 'Auth failes email not found' });
@@ -63,6 +63,17 @@ app.post('/api/users/login', (req, res) => {
             })
         })
     })
+})
+
+app.get('/api/users/logout', auth, (req, res) => {
+    User.findByIdAndUpdate({ _id: req.user.id }, { token: '' },
+        (err, doc) => {
+            if (err) return res.json({ success: false, err });
+            return res.status(200).send({
+                success: true
+            })
+        }
+    )
 })
 const port = process.env.PORT || 3002;
 app.listen(port, () => {
